@@ -1134,6 +1134,7 @@ void dPlayerControl_MurderPlayer(PlayerControl* __this, PlayerControl* target, M
         LOG_ERROR("Exception occurred in PlayerControl_MurderPlayer (PlayerControl)");
     }
     PlayerControl_MurderPlayer(__this, target, resultFlags, method);
+    Game::AutoExposeAfterMurder(__this, resultFlags);
 
     if (Object_1_IsNull((Object_1*)*Game::pShipStatus)) return;
     if (!State.PanicMode && State.ReportOnMurder && (!(__this == *Game::pLocalPlayer || PlayerIsImpostor(GetPlayerData(*Game::pLocalPlayer))) || !State.PreventSelfReport)) {

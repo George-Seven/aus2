@@ -33,6 +33,7 @@ namespace Game {
 	extern DestroyableSingleton<app::RoleManager*> RoleManager;
 	extern DestroyableSingleton<app::HudManager*> HudManager;
 	extern DestroyableSingleton<app::AccountManager*> AccountManager;
+	void AutoExposeAfterMurder(PlayerControl* killer, MurderResultFlags__Enum resultFlags);
 
 	//typedef bool STEAMUSERSTATS_SETACHIEVEMENT(String* pchName);
 	//typedef bool STEAMUSERSTATS_STORESTATS();
