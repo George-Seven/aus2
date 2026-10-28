@@ -325,6 +325,11 @@ namespace GameTab {
             if (IsInGame()) {
                 ImGui::Indent();
                 if (ToggleButton("Teleport everyone to a vent in the kill room", &State.AutoExposeToRoomVent)) State.Save();
+                if (State.AutoExposeToRoomVent) {
+                    ImGui::Indent();
+                    if (ToggleButton("Only teleport if the kill room has a vent", &State.AutoExposeVentOnly)) State.Save();
+                    ImGui::Unindent();
+                }
                 ImGui::Unindent();
             }
 

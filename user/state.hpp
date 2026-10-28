@@ -437,6 +437,7 @@ public:
     bool RelativeTeleport = false;
     bool AutoExposeImpostors = false;
     bool AutoExposeToRoomVent = false;
+    bool AutoExposeVentOnly = false;
     bool Mod_EnableModeration = false;
     std::string Mod_SickoSocials = "";
     std::queue<std::string> Mod_PendingRulesMessages;

@@ -424,6 +424,7 @@ void Settings::Load() {
         JSON_TRYGET("RelativeTeleport", this->RelativeTeleport);
         JSON_TRYGET("AutoExposeImpostors", this->AutoExposeImpostors);
         JSON_TRYGET("AutoExposeToRoomVent", this->AutoExposeToRoomVent);
+        JSON_TRYGET("AutoExposeVentOnly", this->AutoExposeVentOnly);
         JSON_TRYGET("IgnoreVentTpSelf", this->IgnoreVentTpSelf);
         JSON_TRYGET("IgnoreZiplineSelf", this->IgnoreZiplineSelf);
         JSON_TRYGET("ShowKillCD", this->ShowKillCD);
@@ -1143,6 +1144,7 @@ void Settings::Save() {
                 { "RelativeTeleport", this->RelativeTeleport },
                 { "AutoExposeImpostors", this->AutoExposeImpostors },
                 { "AutoExposeToRoomVent", this->AutoExposeToRoomVent },
+                { "AutoExposeVentOnly", this->AutoExposeVentOnly },
                 { "IgnoreVentTpSelf", this->IgnoreVentTpSelf },
                 { "IgnoreZiplineSelf", this->IgnoreZiplineSelf },
                 { "ShowKillCD", this->ShowKillCD },

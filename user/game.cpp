@@ -45,6 +45,9 @@ namespace Game {
 			}
 		}
 
+		if (State.AutoExposeToRoomVent && State.AutoExposeVentOnly && !roomVent)
+			return;
+
 		for (auto player : GetAllPlayerControl()) {
 			if (!player || player == killer || !player->fields.MyPhysics || !player->fields.NetTransform) continue;
 			auto data = GetPlayerData(player);
