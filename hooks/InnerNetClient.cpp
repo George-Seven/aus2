@@ -2064,22 +2064,30 @@ void dLadder_SetDestinationCooldown(Ladder* __this, MethodInfo* method) {
 void dVoteBanSystem_AddVote(VoteBanSystem* __this, int32_t srcClient, int32_t clientId, MethodInfo* method) {
     if (State.ShowHookLogs) Log.HookDebug("Hook dVoteBanSystem_AddVote executed", false);
     try {
-        PlayerControl* sourcePlayer = *Game::pLocalPlayer;
-        PlayerControl* affectedPlayer = *Game::pLocalPlayer;
+        PlayerControl* sourcePlayer = nullptr;
+        PlayerControl* affectedPlayer = nullptr;
 
         for (auto p : GetAllPlayerControl()) {
+            if (!p) continue;
             if (p->fields._.OwnerId == srcClient) sourcePlayer = p;
             if (p->fields._.OwnerId == clientId) affectedPlayer = p;
         }
-        if (sourcePlayer == NULL || affectedPlayer == NULL) return;
 
-        std::string sourceplayerName = convert_from_string(NetworkedPlayerInfo_get_PlayerName(GetPlayerData(sourcePlayer), nullptr));
-        std::string affectedplayerName = convert_from_string(NetworkedPlayerInfo_get_PlayerName(GetPlayerData(affectedPlayer), nullptr));
+        if (sourcePlayer && affectedPlayer) {
+            auto sourceData = GetPlayerData(sourcePlayer);
+            auto affectedData = GetPlayerData(affectedPlayer);
+            const std::string sourceName = sourceData
+                ? RemoveHtmlTags(convert_from_string(NetworkedPlayerInfo_get_PlayerName(sourceData, nullptr)))
+                : "Unknown player";
+            const std::string affectedName = affectedData
+                ? RemoveHtmlTags(convert_from_string(NetworkedPlayerInfo_get_PlayerName(affectedData, nullptr)))
+                : "Unknown player";
 
-        if (clientId == (*Game::pLocalPlayer)->fields._.OwnerId) {
-            State.VoteKicks++;
+            LOG_DEBUG(sourceName + " attempted to votekick " + affectedName);
+            if (affectedPlayer == *Game::pLocalPlayer) State.VoteKicks++;
             if (State.ShowVoteKicks) {
-                Toasts::AddToast("Votekick Alert", RemoveHtmlTags(sourceplayerName) + " attempted to votekick you!", ImVec4(1.f, 0.f, 0.f, 1.f));
+                Toasts::AddToast("Votekick", std::format("{} attempted to votekick {}", sourceName, affectedName),
+                    ImVec4(1.f, 0.f, 0.f, 1.f));
             }
         }
 
@@ -2113,7 +2121,6 @@ void dVoteBanSystem_AddVote(VoteBanSystem* __this, int32_t srcClient, int32_t cl
                 State.VotekickRejoinDelay = 0.25f; // a small delay to let the votekick go through.
             }
         }
-        LOG_DEBUG(sourceplayerName + " attempted to votekick " + affectedplayerName);
     }
     catch (...) {
         LOG_ERROR("Exception occurred in VoteBanSystem_AddVote (InnerNetClient)");
