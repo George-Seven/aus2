@@ -322,6 +322,12 @@ namespace GameTab {
 
             if (IsInGame() && ToggleButton("Auto Expose Impostors (may get banned if not host!)", &State.AutoExposeImpostors)) State.Save();
 
+            if (IsInGame()) {
+                ImGui::Indent();
+                if (ToggleButton("Teleport everyone to a vent in the kill room", &State.AutoExposeToRoomVent)) State.Save();
+                ImGui::Unindent();
+            }
+
             if ((IsInGame() || (IsInLobby() && State.KillInLobbies)) && (IsHost() || !State.SafeMode)) {
                 if (AnimatedButton("Kill All Crewmates")) {
                     for (auto player : GetAllPlayerControl()) {
