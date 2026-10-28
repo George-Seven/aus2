@@ -889,15 +889,9 @@ void dInnerNetClient_Update(InnerNetClient* __this, MethodInfo* method) {
                             for (auto p : GetAllPlayerControl()) {
                                 if (p == NULL) continue;
                                 if (State.IgnoreZiplineSelf && p == *Game::pLocalPlayer) continue;
-                                
-                                if (!State.SpamZiplineEveryone) {
-                                    auto it = std::find(State.spamZiplinePlayers.begin(), State.spamZiplinePlayers.end(), p->fields.PlayerId);
-                                    if (it == State.spamZiplinePlayers.end()) continue;
-                                }
-
+                                if (!State.SpamZiplineEveryone && std::find(State.spamZiplinePlayers.begin(), State.spamZiplinePlayers.end(), p->fields.PlayerId) == State.spamZiplinePlayers.end()) continue;
                                 auto ziplineBehaviour = (ZiplineBehaviour*)((FungleShipStatus*)(*Game::pShipStatus))->fields._Zipline_k__BackingField;
                                 if (ziplineBehaviour == NULL) continue;
-
                                 PlayerControl_RpcUseZipline(p, p, ziplineBehaviour, ziplineTop, NULL);
                             }
                             ziplineTop = !ziplineTop;
@@ -908,17 +902,27 @@ void dInnerNetClient_Update(InnerNetClient* __this, MethodInfo* method) {
                     else ziplineClimbDelay = 0.f;
                 }
 
-                /*if (IsHost() && State.AutoStartGamePlayers && IsInLobby() && !editingAutoStartPlayerCount && !autoStartedGame) {  //this makes sure they dont start the game by mistake, if they are typing a 2 digit number eg 12
-                    int playerCount = 0;
-                    for (auto p : GetAllPlayerControl()) {
-                        if (!p->fields.isNew) playerCount++;
+                static float autoStartTimer = 0.0f;
+                const int requiredPlayerCount = std::clamp(State.AutoStartPlayerCount, 1, 15);
+                int joinedPlayerCount = 0;
+                if (IsHost() && IsInLobby() && State.AutoStartGamePlayers && !editingAutoStartPlayerCount && !autoStartedGame) {
+                    for (auto player : GetAllPlayerControl()) {
+                        if (player && !player->fields.isNew) ++joinedPlayerCount;
                     }
-                    if (playerCount >= State.AutoStartPlayerCount) {
+                }
+                if (IsHost() && IsInLobby() && State.AutoStartGamePlayers && !editingAutoStartPlayerCount &&
+                    !autoStartedGame && joinedPlayerCount >= requiredPlayerCount) {
+                    autoStartTimer += Time_get_deltaTime(NULL);
+                    if (autoStartTimer >= 1.0f) {
                         autoStartedGame = true;
-                        AmongUsClient_KickNotJoinedPlayers(*Game::pAmongUsClient, NULL);
-                        InnerNetClient_SendStartGame((InnerNetClient*)(*Game::pAmongUsClient), NULL);
+                        autoStartTimer = 0.0f;
+                        app::AmongUsClient_KickNotJoinedPlayers(*Game::pAmongUsClient, NULL);
+                        app::InnerNetClient_SendStartGame((InnerNetClient*)(*Game::pAmongUsClient), NULL);
                     }
-                }*/
+                }
+                else {
+                    autoStartTimer = 0.0f;
+                }
 
                 static int sabotageDelay = 0;
                 static bool fixSabotage = false;

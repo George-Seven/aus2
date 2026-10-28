@@ -361,6 +361,8 @@ void Settings::Load() {
         JSON_TRYGET("NameColor2_A", this->NameColor2.w);
         JSON_TRYGET("AutoStartGame", this->AutoStartGame);
         JSON_TRYGET("AutoStartTimer", this->AutoStartTimer);
+        JSON_TRYGET("AutoStartGamePlayers", this->AutoStartGamePlayers);
+        JSON_TRYGET("AutoStartPlayerCount", this->AutoStartPlayerCount);
         JSON_TRYGET("AutoOpenDoors", this->AutoOpenDoors);
         JSON_TRYGET("MoveInVentAndShapeshift", this->MoveInVentAndShapeshift);
         JSON_TRYGET("AlwaysMove", this->AlwaysMove);
@@ -1078,6 +1080,8 @@ void Settings::Save() {
                 { "NameColor2_A", this->NameColor2.w },
                 { "AutoStartGame", this->AutoStartGame },
                 { "AutoStartTimer", this->AutoStartTimer },
+                { "AutoStartGamePlayers", this->AutoStartGamePlayers },
+                { "AutoStartPlayerCount", this->AutoStartPlayerCount },
                 { "AutoOpenDoors", this->AutoOpenDoors },
                 { "MoveInVentAndShapeshift", this->MoveInVentAndShapeshift },
                 { "AlwaysMove", this->AlwaysMove },
