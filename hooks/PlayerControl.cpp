@@ -24,6 +24,39 @@ struct PlayerActivityInfo {
 
 std::unordered_map<int, PlayerActivityInfo> playerActivityMap;
 
+namespace FirstMeetingCooldown {
+    constexpr float COOLDOWN_SECONDS = 45.0f;
+
+    static std::chrono::steady_clock::time_point gameStartTime{};
+    static bool timerActive = false;
+
+    inline void Start() {
+        gameStartTime = std::chrono::steady_clock::now();
+        timerActive = true;
+    }
+
+    inline void Reset() {
+        timerActive = false;
+    }
+
+    inline bool IsBlocked() {
+        if (!timerActive)
+            return false;
+
+        const auto elapsed =
+            std::chrono::duration_cast<std::chrono::duration<float>>(
+                std::chrono::steady_clock::now() - gameStartTime
+            ).count();
+
+        if (elapsed >= COOLDOWN_SECONDS) {
+            timerActive = false;
+            return false;
+        }
+
+        return true;
+    }
+}
+
 void dPlayerControl_CompleteTask(PlayerControl* __this, uint32_t idx, MethodInfo* method) {
     if (State.ShowHookLogs) Log.HookDebug("Hook dPlayerControl_CompleteTask executed", false);
     try {
@@ -941,6 +974,14 @@ void dPlayerControl_OnGameStart(PlayerControl* __this, MethodInfo* method) {
     if (State.ShowHookLogs) Log.HookDebug("Hook dPlayerControl_OnGameStart executed", false);
     try {
         State.GameLoaded = true;
+        if (__this == *Game::pLocalPlayer && IsHost()) {
+            if (State.FirstMeetingCooldown) {
+                FirstMeetingCooldown::Start();
+            }
+            else {
+                FirstMeetingCooldown::Reset();
+            }
+        }
 
         if (State.Overflow && __this == *Game::pLocalPlayer &&
             convert_from_string(GetPlayerOutfit(GetPlayerData(__this))->fields.NamePlateId) == "missing") {
@@ -1381,6 +1422,31 @@ void dGameObject_SetActive(GameObject* __this, bool value, MethodInfo* method)
         LOG_ERROR("Exception occurred in GameObject_SetActive (PlayerControl)");
     }
     GameObject_SetActive(__this, value, method);
+}
+
+void dPlayerControl_ReportDeadBody(
+    PlayerControl* __this,
+    NetworkedPlayerInfo* target,
+    MethodInfo* method)
+{
+    if (State.ShowHookLogs)
+        Log.HookDebug("Hook dPlayerControl_ReportDeadBody executed", false);
+
+    try {
+        if (!State.PanicMode &&
+            IsHost() &&
+            State.FirstMeetingCooldown &&
+            target == nullptr &&
+            FirstMeetingCooldown::IsBlocked()) {
+
+            return;
+        }
+    }
+    catch (...) {
+        Log.Debug("Exception occurred in ReportDeadBody (PlayerControl)");
+    }
+
+    PlayerControl_ReportDeadBody(__this, target, method);
 }
 
 void dPlayerControl_CmdReportDeadBody(PlayerControl* __this, NetworkedPlayerInfo* target, MethodInfo* method) {

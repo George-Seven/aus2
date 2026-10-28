@@ -456,6 +456,9 @@ namespace HostTab {
                 if (ToggleButton("Disable Meetings", &State.DisableMeetings))
                     State.Save();
 
+                if (ToggleButton("First Meeting Cooldown (45s)", &State.FirstMeetingCooldown))
+                    State.Save();
+
                 if (ToggleButton("Disable Sabotages", &State.DisableSabotages))
                     State.Save();
 

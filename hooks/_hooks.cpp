@@ -142,6 +142,7 @@ void DetourInitilization() {
 	HOOKFUNC(PlayerControl_HandleRpc);
 	HOOKFUNC(PlayerControl_RpcStartMeeting);
 	HOOKFUNC(PlayerControl_CmdReportDeadBody);
+	HOOKFUNC(PlayerControl_ReportDeadBody);
 	HOOKFUNC(PlayerControl_RpcSendChat);
 	HOOKFUNC(Renderer_set_enabled);
 	HOOKFUNC(MeetingHud_Awake);
@@ -371,6 +372,7 @@ void DetourUninitialization()
 	UNHOOKFUNC(PlayerControl_HandleRpc);
 	UNHOOKFUNC(PlayerControl_RpcStartMeeting);
 	UNHOOKFUNC(PlayerControl_CmdReportDeadBody);
+	UNHOOKFUNC(PlayerControl_ReportDeadBody);
 	UNHOOKFUNC(PlayerControl_RpcSendChat);
 	UNHOOKFUNC(Renderer_set_enabled);
 	UNHOOKFUNC(MeetingHud_Awake);

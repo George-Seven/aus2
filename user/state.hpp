@@ -131,6 +131,7 @@ public:
     bool RandomSpawns = false;
     bool Overflow = false;
     bool DisableMeetings = false;
+    bool FirstMeetingCooldown = true;
     bool DisableSabotages = false;
     bool DisableAllVotekicks = false;
     bool DisableRoleManager = false;

@@ -41,6 +41,7 @@ void dPlayerControl_CmdCheckMurder(PlayerControl* __this, PlayerControl* target,
 void dPlayerControl_CheckMurder(PlayerControl* __this, PlayerControl* target, MethodInfo* method);
 void dPlayerControl_RpcSyncSettings(PlayerControl* __this, Byte__Array* optionsByteArray, MethodInfo* method);
 void dPlayerControl_CmdReportDeadBody(PlayerControl* __this, NetworkedPlayerInfo* target, MethodInfo* method);
+void dPlayerControl_ReportDeadBody(PlayerControl* __this, NetworkedPlayerInfo* target, MethodInfo* method);
 void dPlayerControl_RpcSendChat(PlayerControl* __this, String* chatText, MethodInfo* method);
 void dPlayerControl_RpcStartMeeting(PlayerControl* __this, NetworkedPlayerInfo* target, MethodInfo* method);
 void dPlayerControl_HandleRpc(PlayerControl* __this, uint8_t callId, MessageReader* reader, MethodInfo* method);

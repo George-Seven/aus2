@@ -252,6 +252,7 @@ void Settings::Load() {
 
         JSON_TRYGET("NoGameEnd", this->NoGameEnd);
         JSON_TRYGET("DisableMeetings", this->DisableMeetings);
+        JSON_TRYGET("FirstMeetingCooldown", this->FirstMeetingCooldown);
         JSON_TRYGET("DisableSabotages", this->DisableSabotages);
         JSON_TRYGET("DisableAllVotekicks", this->DisableAllVotekicks);
         JSON_TRYGET("AutoRejoinOnKick", this->AutoRejoinOnKick);
@@ -897,6 +898,7 @@ void Settings::Save() {
 
                 { "NoGameEnd", this->NoGameEnd },
                 { "DisableMeetings", this->DisableMeetings },
+                { "FirstMeetingCooldown", this->FirstMeetingCooldown },
                 { "DisableSabotages", this->DisableSabotages },
                 { "DisableAllVotekicks", this->DisableAllVotekicks },
                 { "AutoRejoinOnKick", this->AutoRejoinOnKick },
