@@ -52,7 +52,8 @@ namespace Game {
 			return;
 
 		for (auto player : GetAllPlayerControl()) {
-			if (!player || player == killer || !player->fields.MyPhysics || !player->fields.NetTransform) continue;
+			if (!player || !player->fields.MyPhysics || !player->fields.NetTransform) continue;
+			if (player == killer || player->fields.PlayerId == killer->fields.PlayerId) continue;
 			auto data = GetPlayerData(player);
 			if (!data || data->fields.Disconnected) continue;
 			if ((!roomVent || !State.AutoExposeToRoomVent) && data->fields.IsDead) continue;
