@@ -320,18 +320,20 @@ namespace GameTab {
                 }
             }
 
-            if (IsInGame() && ToggleButton("Auto Expose Impostors (may get banned if not host!)", &State.AutoExposeImpostors)) State.Save();
+            ImGui::Dummy(ImVec2(0, 12) * State.dpiScale);
+            if (IsInGame()) ToggleButton("Auto Expose Impostors (may get banned if not host!)", &State.AutoExposeImpostors);
 
-            if (IsInGame()) {
+            if (IsInGame() && State.AutoExposeImpostors) {
                 ImGui::Indent();
-                if (ToggleButton("Teleport everyone to a vent in the kill room", &State.AutoExposeToRoomVent)) State.Save();
+                ToggleButton("Teleport everyone to the nearest vent to the kill location", &State.AutoExposeToRoomVent);
                 if (State.AutoExposeToRoomVent) {
                     ImGui::Indent();
-                    if (ToggleButton("Only teleport if the kill room has a vent", &State.AutoExposeVentOnly)) State.Save();
+                    ToggleButton("Only teleport if the kill room has a vent", &State.AutoExposeVentOnly);
                     ImGui::Unindent();
                 }
                 ImGui::Unindent();
             }
+            ImGui::Dummy(ImVec2(0, 12) * State.dpiScale);
 
             if ((IsInGame() || (IsInLobby() && State.KillInLobbies)) && (IsHost() || !State.SafeMode)) {
                 if (AnimatedButton("Kill All Crewmates")) {

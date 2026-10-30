@@ -22,12 +22,15 @@ namespace Game {
 		if (!State.AutoExposeImpostors || State.PanicMode || !IsInGame() || !killer ||
 			(static_cast<int32_t>(resultFlags) & static_cast<int32_t>(MurderResultFlags__Enum::Succeeded)) == 0)
 			return;
+		if (Game::pLocalPlayer && killer == *Game::pLocalPlayer)
+			return;
 
 		auto killerData = GetPlayerData(killer);
 		if (!killerData || !PlayerIsImpostor(killerData)) return;
 
 		const auto killerPosition = PlayerControl_GetTruePosition(killer, nullptr);
 		Vent* roomVent = nullptr;
+		bool killRoomHasVent = false;
 		if (State.AutoExposeToRoomVent && Game::pShipStatus && *Game::pShipStatus) {
 			const auto killRoom = GetSystemTypes(killPosition);
 			float closestDistance = (std::numeric_limits<float>::max)();
@@ -37,7 +40,7 @@ namespace Game {
 				if (!ventTransform) continue;
 				const auto ventPosition3 = Transform_get_position(ventTransform, nullptr);
 				const Vector2 ventPosition{ ventPosition3.x, ventPosition3.y };
-				if (GetSystemTypes(ventPosition) != killRoom) continue;
+				if (GetSystemTypes(ventPosition) == killRoom) killRoomHasVent = true;
 				const float distance = std::hypot(ventPosition.x - killPosition.x, ventPosition.y - killPosition.y);
 				if (distance >= closestDistance) continue;
 				closestDistance = distance;
@@ -45,7 +48,7 @@ namespace Game {
 			}
 		}
 
-		if (State.AutoExposeToRoomVent && State.AutoExposeVentOnly && !roomVent)
+		if (State.AutoExposeToRoomVent && State.AutoExposeVentOnly && !killRoomHasVent)
 			return;
 
 		for (auto player : GetAllPlayerControl()) {
@@ -55,10 +58,27 @@ namespace Game {
 			if ((!roomVent || !State.AutoExposeToRoomVent) && data->fields.IsDead) continue;
 
 			if (roomVent && State.AutoExposeToRoomVent) {
-				if (IsHost())
-					PlayerPhysics_RpcBootFromVent(player->fields.MyPhysics, roomVent->fields.Id, nullptr);
-				else
+				if (IsHost()) {
+					if (player == *Game::pLocalPlayer) {
+						State.AntiExploit_IsTeleportingSelf = true;
+						const bool antiExploitWasEnabled = State.AntiExploit_UnauthorizedTeleports;
+						State.AntiExploit_UnauthorizedTeleports = false;
+						PlayerPhysics_RpcBootFromVent(player->fields.MyPhysics, roomVent->fields.Id, nullptr);
+						State.AntiExploit_UnauthorizedTeleports = antiExploitWasEnabled;
+					}
+					else {
+						PlayerPhysics_RpcBootFromVent(player->fields.MyPhysics, roomVent->fields.Id, nullptr);
+					}
+				}
+				else if (player == *Game::pLocalPlayer) {
+					const bool antiExploitWasEnabled = State.AntiExploit_UnauthorizedTeleports;
+					State.AntiExploit_UnauthorizedTeleports = false;
 					SendBootVentNonHost(player, roomVent->fields.Id);
+					State.AntiExploit_UnauthorizedTeleports = antiExploitWasEnabled;
+				}
+				else {
+					SendBootVentNonHost(player, roomVent->fields.Id);
+				}
 			}
 			else {
 				CustomNetworkTransform_RpcSnapTo(player->fields.NetTransform, killerPosition, nullptr);
